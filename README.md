@@ -19,9 +19,10 @@
 1. Clone the repo
 2. cd terraform_sogema
 3. go to the directory you have interest on
-3. az login 
-3. terraforme init
-4. terraform plan
-5. terraform apply
+4. az login
+  - for security purposes, we decided to not add the subscription_id in the terraform scripts. The analyst needs to login manually prior to launch the terraform. 
+5. terraforme init
+6. terraform plan
+7. terraform apply
 
 ---
