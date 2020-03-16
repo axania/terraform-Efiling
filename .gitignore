@@ -1,5 +1,0 @@
-*.tfstate.lock.info
-*.tfstate
-*.tfstate.backup
-*lock.json
-*terraform-provider-azurerm_v2.*
