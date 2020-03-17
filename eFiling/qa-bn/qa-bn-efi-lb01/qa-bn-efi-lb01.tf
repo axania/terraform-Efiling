@@ -11,11 +11,16 @@ variable "admin_username" {
 }
 
 variable "admin_password" {
-  default = "S4b4d0@w0rk#01"
+# To be entered via command line when launching the terraform
+# Please refer to the confluence page for the default password for this system-and-environment
 }
 
 variable "environment_prefix" {
   default = "qa-bn"
+}
+
+variable "vm_function" {
+  default = "lb01"
 }
 
 variable "system_name" {
@@ -27,7 +32,7 @@ variable "environment_tag" {
 }
 
 variable "product_tag" {
-  default = "efi"
+  default = "EFI"
 }
 
 variable "role_tag" {
@@ -59,13 +64,13 @@ data "azurerm_resource_group" "existing_resource_group" {
 
 #####################################################################################################
 # This is for the load balancer box
-resource "azurerm_network_interface" "new_terraform_lb01_nic01" {
-    name                      = "${var.environment_prefix}-${var.system_name}-lb01_nic01"
+resource "azurerm_network_interface" "new_terraform_vm_nic01" {
+    name                      = "${var.environment_prefix}-${var.system_name}-${var.vm_function}_nic01"
     resource_group_name       = data.azurerm_resource_group.existing_resource_group.name
     location                  = data.azurerm_resource_group.existing_resource_group.location
 
     ip_configuration {
-        name                           = "lb01-nic01_conf"
+        name                           = "${var.vm_function}-nic01_conf"
         subnet_id                      = data.azurerm_subnet.existing_subnet.id
         private_ip_address_allocation  = "Dynamic"
     }
@@ -79,15 +84,15 @@ resource "azurerm_network_interface" "new_terraform_lb01_nic01" {
 
 #########################################################################################
 #VM Creation
-resource "azurerm_virtual_machine" "new_terraform_lb01" {
-    name                  = "${var.environment_prefix}-${var.system_name}-lb01"
+resource "azurerm_virtual_machine" "new_terraform_vm" {
+    name                  = "${var.environment_prefix}-${var.system_name}-${var.vm_function}"
     location              = "eastus2"
     resource_group_name   = data.azurerm_resource_group.existing_resource_group.name
-    network_interface_ids = ["${azurerm_network_interface.new_terraform_lb01_nic01.id}"]
+    network_interface_ids = ["${azurerm_network_interface.new_terraform_vm_nic01.id}"]
     vm_size               = "Standard_B2ms"
 
     storage_os_disk {
-        name              = "${var.environment_prefix}-${var.system_name}-lb01_osDisk"
+        name              = "${var.environment_prefix}-${var.system_name}-${var.vm_function}_osDisk"
         caching           = "ReadWrite"
         create_option     = "FromImage"
         managed_disk_type = "Standard_LRS"
@@ -103,7 +108,7 @@ resource "azurerm_virtual_machine" "new_terraform_lb01" {
     }
 
     os_profile {
-        computer_name  = "${var.environment_prefix}-${var.system_name}-lb01"
+        computer_name  = "${var.environment_prefix}-${var.system_name}-${var.vm_function}"
         admin_username = var.admin_username
 	    admin_password = var.admin_password
     }
