@@ -28,10 +28,15 @@
 4. az login
   - for security purposes, we decided to not add the subscription_id in the terraform scripts. The analyst needs to login manually prior to launch the terraform. 
 5. terraforme init
+<<<<<<< master
 6. terraform plan -var 'admin_password=12345678qwertyui'
  - add the correct password for the system-and-environment 
 7. terraform apply -var 'admin_password=12345678qwertyui'
  - add the correct password for the system-and-environment 
 >>>>>>> added the information on the README.md file for the terraform command line containing the password's variable
+=======
+6. terraform plan
+7. terraform apply
+>>>>>>> Revert "added the information on the README.md file for the terraform command line containing the password's variable"
 
 ---
