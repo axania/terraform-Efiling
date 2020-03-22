@@ -16,11 +16,11 @@ variable "admin_password" {
 }
 
 variable "environment_prefix" {
-  default = "qa-ml"
+  default = "qa-sr"
 }
 
 variable "vm_function" {
-  default = "worker01"
+  default = "lb01"
 }
 
 variable "system_name" {
@@ -28,7 +28,7 @@ variable "system_name" {
 }
 
 variable "environment_tag" {
-  default = "eFiling QA Mali"
+  default = "eFiling QA Suriname"
 }
 
 variable "product_tag" {

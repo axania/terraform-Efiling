@@ -7,7 +7,7 @@ provider "azurerm" {
 #Environment variables to be used by the provisioner 
 #change these ones for further servers/environments
 variable "admin_username" {
-  default = "efi"
+  default = "epip"
 }
 
 variable "admin_password" {
@@ -24,15 +24,15 @@ variable "vm_function" {
 }
 
 variable "system_name" {
-  default = "efi"
+  default = "epip"
 }
 
 variable "environment_tag" {
-  default = "eFiling QA Mali"
+  default = "EPIP QA Mali"
 }
 
 variable "product_tag" {
-  default = "EFI"
+  default = "EPIP"
 }
 
 variable "role_tag" {

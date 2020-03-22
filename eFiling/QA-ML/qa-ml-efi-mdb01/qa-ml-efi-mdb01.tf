@@ -4,6 +4,47 @@ provider "azurerm" {
   features {}
 }
 
+#Environment variables to be used by the provisioner 
+#change these ones for further servers/environments
+variable "admin_username" {
+  default = "efi"
+}
+
+variable "admin_password" {
+# To be entered via command line when launching the terraform
+# Please refer to the confluence page for the default password for this system-and-environment
+}
+
+variable "environment_prefix" {
+  default = "qa-ml"
+}
+
+variable "vm_function" {
+  default = "mdb01"
+}
+
+variable "system_name" {
+  default = "efi"
+}
+
+variable "environment_tag" {
+  default = "eFiling QA Mali"
+}
+
+variable "product_tag" {
+  default = "EFI"
+}
+
+variable "role_tag" {
+  default = "qa"
+}
+
+
+# You'll usually want to set this to a region near you.
+variable "location" {
+  default = "eastus2"
+}
+
 #####################################################################################################
 #refer to an existing vnet
 data "azurerm_virtual_network" "existing_virtualnet" {
@@ -22,41 +63,43 @@ data "azurerm_resource_group" "existing_resource_group" {
 }
 
 #####################################################################################################
-# This is for the mongo box
-resource "azurerm_network_interface" "new_terraform_mdb01_nic01" {
-    name                      = "qa-ml-efi-mdb01_nic01"
+# This is for the load balancer box
+resource "azurerm_network_interface" "new_terraform_vm_nic01" {
+    name                      = "${var.environment_prefix}-${var.system_name}-${var.vm_function}_nic01"
     resource_group_name       = data.azurerm_resource_group.existing_resource_group.name
     location                  = data.azurerm_resource_group.existing_resource_group.location
 
     ip_configuration {
-        name                           = "mdb01-nic01_conf"
+        name                           = "${var.vm_function}-nic01_conf"
         subnet_id                      = data.azurerm_subnet.existing_subnet.id
         private_ip_address_allocation  = "Dynamic"
     }
 
     tags = {
-        environment = "eFiling QA Mali"
-        product = "eFiling"
-        role = "qa"
+        environment = "${var.environment_tag}"
+        product = "${var.product_tag}"
+        role = "${var.role_tag}"
     }
 }
 
 #########################################################################################
 #VM Creation
-resource "azurerm_virtual_machine" "new_terraform_mdb01" {
-    name                  = "qa-ml-efi-mdb01"
+resource "azurerm_virtual_machine" "new_terraform_vm" {
+    name                  = "${var.environment_prefix}-${var.system_name}-${var.vm_function}"
     location              = "eastus2"
     resource_group_name   = data.azurerm_resource_group.existing_resource_group.name
-    network_interface_ids = ["${azurerm_network_interface.new_terraform_mdb01_nic01.id}"]
+    network_interface_ids = ["${azurerm_network_interface.new_terraform_vm_nic01.id}"]
     vm_size               = "Standard_B2ms"
 
     storage_os_disk {
-        name              = "qa-ml-efi-mdb01_osDisk"
+        name              = "${var.environment_prefix}-${var.system_name}-${var.vm_function}_osDisk"
         caching           = "ReadWrite"
         create_option     = "FromImage"
         managed_disk_type = "Standard_LRS"
     }
 
+    delete_os_disk_on_termination = true
+    
     storage_image_reference {
         publisher = "Canonical"
         offer     = "UbuntuServer"
@@ -65,9 +108,9 @@ resource "azurerm_virtual_machine" "new_terraform_mdb01" {
     }
 
     os_profile {
-        computer_name  = "qa-ml-efi-mdb01"
-        admin_username = "efi"
-	    admin_password = "S4b4d0@w0rk#01"
+        computer_name  = "${var.environment_prefix}-${var.system_name}-${var.vm_function}"
+        admin_username = var.admin_username
+	    admin_password = var.admin_password
     }
 
     os_profile_linux_config {
@@ -75,9 +118,9 @@ resource "azurerm_virtual_machine" "new_terraform_mdb01" {
     }
 
     tags = {
-        environment = "eFiling QA Mali"
-        product = "eFiling"
-        role = "qa"
+        environment = "${var.environment_tag}"
+        product = "${var.product_tag}"
+        role = "${var.role_tag}"
     }
 }
 

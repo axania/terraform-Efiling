@@ -5,6 +5,11 @@ provider "azurerm" {
   features {}
 }
 
+variable "admin_password" {
+# To be entered via command line when launching the terraform
+# Please refer to the confluence page for the default password for this system-and-environment
+}
+
 #####################################################################################################
 #refer to an existing vnet
 data "azurerm_virtual_network" "existing_virtualnet" {
@@ -92,7 +97,7 @@ resource "azurerm_virtual_machine" "new_terraform_build01" {
     os_profile {
         computer_name  = "dev-efi-build01"
         admin_username = "efi"
-  	    admin_password = "S4b4d0@w0rk#01"
+  	    admin_password = var.admin_password
     }
 
     os_profile_linux_config {
@@ -135,7 +140,7 @@ resource "azurerm_virtual_machine" "new_terraform_build02" {
     os_profile {
         computer_name  = "dev-efi-build02"
         admin_username = "efi"
-  	    admin_password = "S4b4d0@w0rk#01"
+  	    admin_password = var.admin_password
     }
 
     os_profile_linux_config {
